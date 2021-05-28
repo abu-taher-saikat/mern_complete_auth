@@ -1,14 +1,16 @@
 const express = require('express');
-const { signup } = require('../controllers/auth');
+const { signup , signin, accountActivation } = require('../controllers/auth');
 
 // import validator
-const {userSignupValidator} = require('../validators/auth');
+const {userSignupValidator, userSigninValidator} = require('../validators/auth');
 const {runValidation} = require('../validators/index');
 
 
 const router = express.Router();
 
 router.post('/signup', userSignupValidator, runValidation, signup)
+router.post('/signin', userSigninValidator, runValidation, signin)
+router.post('/account-activation', accountActivation)
 
 
 
