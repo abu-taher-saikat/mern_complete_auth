@@ -35,8 +35,7 @@ exports.signup = async (req,res) => {
             })
 
             res.status(200).json({
-                success : true,
-                data : 'Email sent'
+                message : `Email has been sent to ${email}. Follow the instuction to active you account.`
             })
         }catch(error){
             // console.log(error.message)

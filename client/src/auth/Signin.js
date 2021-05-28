@@ -5,17 +5,14 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axios from 'axios';
 
-
-
-const Signup = () => {
+const Signin = () => {
     const [values, setValues] = useState({
-        name : "Abu Taher Saikat",
         email : "mdabutahersaikat@gmail.com",
         password : "saikat1095",
         buttonText : "Submit"
     })
 
-    const {name , email , password, buttonText} = values;
+    const { email , password, buttonText} = values;
 
     const handleChange = (name) =>  (event) => {
         // 
@@ -28,18 +25,22 @@ const Signup = () => {
         setValues({...values, buttonText : 'Submitting'});
         axios({
             method : 'POST',
-            url : `${process.env.REACT_APP_API}/signup`,
-            data : {name, email, password}
+            url : `${process.env.REACT_APP_API}/signin`,
+            data : {email, password}
         })
         .then(response => {
             console.log('Signup Success', response);
+
+            // save the responce (user, token) localstorage/cookie 
+
+
             // cleane up the state
             setValues({...values, name : '', email : '', password : '', buttonText : 'submitted' })
             // using toastnotification
-            toast.success(response.data.message)
+            toast.success(`Hery ${response.data.user.name}, Welcome Back!`)
         })
         .catch(error => {
-            console.log('SIGNUP ERROR', error.response.data);
+            console.log('SIGNIN ERROR', error.response.data);
             // cleane up the state
             setValues({...values, buttonText : 'Submit' })
             // using toastnotification
@@ -47,12 +48,8 @@ const Signup = () => {
         })
     }
 
-    const signupForm = () => (
+    const signinForm = () => (
         <form action="">
-            <div className="form-group">
-                <label htmlFor="" className="text-muted" >Name</label>
-                <input onChange={handleChange('name')} value={name} type="text" className="form-control" />
-            </div>
 
             <div className="form-group">
                 <label htmlFor="" className="text-muted" >Email</label>
@@ -71,17 +68,16 @@ const Signup = () => {
     )
 
 
-
     return (
         <Layout>
             <div className="col-md-6 offset-md-3">
                 <ToastContainer></ToastContainer>
-                {JSON.stringify({name, email, password})}
-                <h1 className="p-5 text-center">Sign up</h1>
-                {signupForm()}
+                {JSON.stringify({ email, password})}
+                <h1 className="p-5 text-center">Sign In</h1>
+                {signinForm()}
             </div>
         </Layout>
     )
 }
 
-export default Signup
+export default Signin
