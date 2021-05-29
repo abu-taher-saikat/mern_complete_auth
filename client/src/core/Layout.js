@@ -31,14 +31,18 @@ const Layout = ({children,match, history}) => {
 
             )}
 
-            {isAuth() && (
+            {isAuth() && isAuth().role === "admin" && (
             <>
-                <li className="nav-item">
-                    <span 
-                        className="nav-link"
-                        >
-                            {isAuth().name}
-                    </span>
+                <li className="nav-link">
+                    <Link className="nav-link" style={isActive('/admin')} to="/admin" >{isAuth().name}</Link>
+                </li>
+            </>
+            )}
+
+            {isAuth() && isAuth().role === "subscriber" && (
+            <>
+                <li className="nav-link">
+                    <Link className="nav-link" style={isActive('/private')} to="/private">{isAuth().name}</Link>
                 </li>
             </>
             )}

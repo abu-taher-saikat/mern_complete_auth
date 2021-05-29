@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {authenticate, isAuth} from './helpers';
 import axios from 'axios';
 
-const Signin = () => {
+const Signin = ({history}) => {
     const [values, setValues] = useState({
         email : "mdabutahersaikat@gmail.com",
         password : "saikat1095",
@@ -37,9 +37,9 @@ const Signin = () => {
                 // cleane up the state
                 setValues({...values, name : '', email : '', password : '', buttonText : 'submitted' })
                 // using toastnotification
-                toast.success(`Hery ${response.data.user.name}, Welcome Back!`)
+                // toast.success(`Hery ${response.data.user.name}, Welcome Back!`)
+                isAuth() && isAuth().role === 'admin' ? history.push('/admin') : history.push('/private')
             })
-
         })
         .catch(error => {
             console.log('SIGNIN ERROR', error.response.data);
