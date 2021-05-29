@@ -29,7 +29,7 @@ export const getCookie = (key) => {
 // Set in localstorage 
 export const setLocalStorage = (key , value) => {
     if(window !== 'undefined'){
-        localStorage.getItem(key, JSON.stringify(value))
+        localStorage.setItem(key, JSON.stringify(value))
     }
 }
 
@@ -61,4 +61,11 @@ export const isAuth = () => {
             }
         }
     }
+}
+
+
+export const signout = next => {
+    removeCookie('token')
+    removeLocalStorage('user')
+    next();
 }

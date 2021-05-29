@@ -23,7 +23,7 @@ const Activate = ({match}) => {
             setValues({...values, name, token})
         }
         console.log(token)
-    },[])
+    },[values , match.params.token])
 
     
     const clickSubmit = event => {
