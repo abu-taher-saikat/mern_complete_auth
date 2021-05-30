@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
+const expressJwt = require('express-jwt');
 
 
 exports.signup = async (req,res) => {
@@ -118,3 +119,33 @@ exports.signin = (req, res) => {
         })
     })
 }
+
+
+
+
+/**
+ * this is not working due to express-jwt. but i can make protect
+ * and admin route easily with jsonwebtoken. */ 
+// exports.requireSignin = (req, res , next) => expressJwt({
+//     secret : process.env.JWT_SECRET //req.user._id
+// })
+
+
+// exports.adminMiddleware = (req,res,next) => {
+//     User.findById({_id : req.user._id}).exec((err, user)=> {
+//         if(err || !user){
+//             return res.status(400).json({
+//                 error : 'User not found.'
+//             })
+//         }
+
+//         if(user.role !== 'admin'){
+//             return res.status(400).json({
+//                 error : 'Admin resource . Access denied..'
+//             })
+//         }
+
+//         req.profile = user;
+//         next();
+//     })
+// }
