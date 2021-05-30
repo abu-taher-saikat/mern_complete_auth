@@ -2,7 +2,7 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
 const expressJwt = require('express-jwt');
-
+const _ = require('lodash');
 
 exports.signup = async (req,res) => {
     const {name, email, password} = req.body ;
@@ -149,3 +149,102 @@ exports.signin = (req, res) => {
 //         next();
 //     })
 // }
+
+
+exports.forgotPassword = (req,res) => {
+    const {email} = req.body ;
+
+    User.findOne({email}, (err, user) => {
+        if(err || !user){
+            return res.status(400).json({
+                error : 'User with that email does not exist.'
+            });
+        }
+
+                
+        // Create the token
+        const token = jwt.sign({_id : user._id}, process.env.JWT_RESET_PASSWORD,{
+            expiresIn : '10m'
+        })
+
+
+        return user.updateOne({resetPasswordLink : token}, (err, success) => {
+            if(err){
+                console.log('Resetp password link error', err);
+                res.status(400).json({
+                    error : 'Database connection errorn on user password forgot request'
+                })
+            }else{
+                // Try to send email .
+                try{
+                        sendEmail({
+                        email : email,
+                        subject : 'Password reset Link',
+                        message : `
+                        <h1>Pleaser use the following link to reset your password</h1>
+                        <p>${process.env.CLIENT_URL}/auth/password/reset/${token}</p>
+                        <hr />
+                        <p>This email may contain sensetive information.</p>
+                        <p>${process.env.CLIENT_URL}</p>
+                    `
+                    })
+        
+                    res.status(200).json({
+                        message : `Email has been sent to ${email}. Follow the instuction to Change your password.`
+                    })
+                }catch(error){
+                    // console.log(error.message)
+                    res.status(401).json({
+                        success : false,
+                        message : error.message
+                    })
+                }
+
+            }
+        })
+
+
+    })
+}
+
+
+exports.resetPassword = (req,res) => {
+    const {resetPasswordLink, newPassword} = req.body ;
+
+    if(resetPasswordLink){
+        jwt.verify(resetPasswordLink, process.env.JWT_RESET_PASSWORD, function(err, decoded){
+            if(err){
+                return res.status(400).json({
+                    error : 'Expired link. Try again'
+                })
+            }
+
+            User.findOne({resetPasswordLink}, (err, user)=>{
+                if(err || !user){
+                    return res.status(400).json({
+                        error : 'Something went wrong . Try Later'
+                    })
+                }
+
+                const updatedFields = {
+                    password : newPassword,
+                    resetPasswordLink : ''
+                }
+
+                user = _.extend(user, updatedFields) // lodash heper extends.. just change the named values. and other things will be the same.
+                // console.log(`user`, user)
+                user.save((err, result) => {
+                    if(err){
+                        return res.status(400).json({
+                            error : 'Error resetting user password'
+                        })
+                    }
+
+                    return res.json({
+                        message : `Great! Now you can login with our new password`
+                    })
+                })
+            })
+        })
+    }
+}
