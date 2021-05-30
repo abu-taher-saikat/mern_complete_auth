@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import { Redirect} from 'react-router-dom'; 
+import { Link, Redirect} from 'react-router-dom'; 
 import Layout from '../core/Layout'
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -78,6 +78,8 @@ const Signin = ({history}) => {
                 {JSON.stringify({ email, password})}
                 <h1 className="p-5 text-center">Sign In</h1>
                 {signinForm()}
+                <br />
+                <Link to="/auth/password/forgot" className="btn btn-sm btn-outline-danger">Forgot Password</Link>
             </div>
         </Layout>
     )
