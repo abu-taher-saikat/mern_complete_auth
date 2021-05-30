@@ -8,6 +8,7 @@ import Private from './core/Private';
 import Admin from './core/Admin';
 import PrivateRoute from './auth/PrivateRoute';
 import AdminRoute from './auth/AdminRoute';
+import Forgot from './auth/Forgot';
 
 
 
@@ -18,6 +19,7 @@ const Routes = () => {
                 <Route path="/" exact component={App} />
                 <Route path="/signup" exact component={Signup} />
                 <Route path="/signin" exact component={Signin} />
+                <Route path="/auth/password/forgot" exact component={Forgot} />
                 <Route path="/auth/activate/:token" exact component={Activate} />
                 <PrivateRoute path="/private" exact component={Private} />
                 <AdminRoute path="/admin" exact component={Admin} />
