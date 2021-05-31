@@ -3,7 +3,7 @@ import axios from 'axios';
 import GoogleLogin from 'react-google-login';
 import {AiOutlineGoogle} from 'react-icons/ai'
 
-const Google = () =>{
+const Google = ({informParent = f => f}) =>{
     const responseGoogle = (response) => {
         // 
         console.log(response.tokenId);
@@ -15,6 +15,8 @@ const Google = () =>{
         .then(response=> {
             console.log('Google SignIn Success');
             // inform parent component.
+            informParent(response);
+            
         })
         .catch(error => {
             console.log('Google signIn Error', error.response);

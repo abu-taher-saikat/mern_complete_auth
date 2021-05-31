@@ -21,6 +21,13 @@ const Signin = ({history}) => {
         setValues({...values, [name]: event.target.value})
     }
 
+    //its for google login.
+    const informParent = response => {
+        authenticate(response, ()=> {
+            isAuth() && isAuth().role === 'admin' ? history.push('/admin') : history.push('/private')
+        })
+    }
+
     const clickSubmit = event => {
         // 
         event.preventDefault();
@@ -78,7 +85,7 @@ const Signin = ({history}) => {
                 {isAuth() ? <Redirect to="/"/> : null}
                 {JSON.stringify({ email, password})}
                 <h1 className="p-5 text-center">Sign In</h1>
-                <Google></Google>
+                <Google informParent={informParent}></Google>
                 {signinForm()}
                 <br />
                 <Link to="/auth/password/forgot" className="btn btn-sm btn-outline-danger">Forgot Password</Link>

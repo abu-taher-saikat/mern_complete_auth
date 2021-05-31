@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
 const expressJwt = require('express-jwt');
 const _ = require('lodash');
+const {OAuth2Client} = require('google-auth-library')
 
 exports.signup = async (req,res) => {
     const {name, email, password} = req.body ;
@@ -247,4 +248,59 @@ exports.resetPassword = (req,res) => {
             })
         })
     }
+}
+
+
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+exports.googleLogin = (req,res) => {
+    const {idToken} = req.body;
+
+    client.verifyIdToken({idToken, audience: process.env.GOOGLE_CLIENT_ID}).then(response=>{
+        console.log(`Google login response`, response)
+
+        const {email_verified, name, email} = response.payload
+        if(email_verified){
+            // if email e verified.
+            User.findOne({email}).exec((err, user)=>{
+                // if user already exist
+                if(user){
+                    const token = jwt.sign({_id : user._id}, process.env.JWT_SECRET, {
+                        expiresIn : '7d'
+                    })
+                    const {_id, email, name, role} = user
+                    return res.json({
+                        token,
+                        user : {_id, email, name, role}
+                    })
+                }else{
+                    // f user does not exist.
+                    let password = email + process.env.JWT_SECRET
+                    user = new User({name, email, password})
+                    user.save((err, data)=> {
+                        if(err){
+                            console.log(`Error Google login on user save`, err)
+                            return res.status(400).json({
+                                error : 'User signup failed with google.'
+                            })
+                        }
+                        //if no error.
+                        const token = jwt.sign({_id : data._id}, process.env.JWT_SECRET, {
+                            expiresIn : '7d'
+                        })
+                        const {_id, email, name, role} = user
+                        return res.json({
+                            token,
+                            user : {_id, email, name, role}
+                        })
+                    })
+                }
+            })
+        }else{
+            // if email is not verified.
+            return res.status(400).json({
+                error : 'Google login failed. Try agin.'
+            })
+        }
+    })
 }
