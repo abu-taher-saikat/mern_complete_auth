@@ -15,8 +15,10 @@ const Google = ({informParent = f => f}) =>{
         .then(response=> {
             console.log('Google SignIn Success');
             // inform parent component.
-            informParent(response);
+
             
+            informParent(response);
+
         })
         .catch(error => {
             console.log('Google signIn Error', error.response);
